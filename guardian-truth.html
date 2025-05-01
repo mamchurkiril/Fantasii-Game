@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Guardian's Test - The Crystal of Destiny</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container guardian-page">
+        <header>
+            <h1>The Guardian's Test</h1>
+        </header>
+        
+        <main>
+            <div class="story-container">
+                <div class="story-image guardian-image"></div>
+                <div class="story-text">
+                    <p>You tell the guardian about your quest to find the Crystal of Destiny and restore balance to Eldoria. The ancient being listens intently, eyes glowing with an inner light.</p>
+                    
+                    <p>"Truth flows from you like water from a spring," the guardian says, nodding slowly. "The forest hears your heart and finds it worthy."</p>
+                    
+                    <p>The guardian rises, surprisingly tall now, and gestures to the massive tree. "The crystal fragment you seek has been safeguarded here for generations. But it cannot simply be taken—it must be earned."</p>
+                    
+                    <p>With a wave of a gnarled hand, the guardian creates three glowing orbs that hover in the air between you.</p>
+                    
+                    <p>"A test of character," the guardian explains. "Choose the orb that represents what you value most: Power, Wisdom, or Courage. Your choice will determine your path."</p>
+                    
+                    <p class="quest-prompt">Which orb will you choose?</p>
+                </div>
+            </div>
+            
+            <div class="choices-container">
+                <button class="choice-btn" data-destination="crystal-power.html" data-item="Power Crystal Fragment">
+                    <span class="choice-icon power-icon"></span>
+                    <div class="choice-text">
+                        <h3>The Red Orb - Power</h3>
+                        <p>Power to overcome any obstacle and defeat any enemy.</p>
+                    </div>
+                </button>
+                
+                <button class="choice-btn" data-destination="crystal-wisdom.html" data-item="Wisdom Crystal Fragment">
+                    <span class="choice-icon wisdom-icon"></span>
+                    <div class="choice-text">
+                        <h3>The Blue Orb - Wisdom</h3>
+                        <p>Wisdom to see the truth and find the right path through deception.</p>
+                    </div>
+                </button>
+                
+                <button class="choice-btn" data-destination="crystal-courage.html" data-item="Courage Crystal Fragment">
+                    <span class="choice-icon courage-icon"></span>
+                    <div class="choice-text">
+                        <h3>The Green Orb - Courage</h3>
+                        <p>Courage to face any danger and stand against impossible odds.</p>
+                    </div>
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="game-status">
+                <div id="player-stats">
+                    <span id="player-name-display">Adventurer</span> | 
+                    <span id="player-class-display">Unknown</span> | 
+                    <span id="player-health">Health: 100</span>
+                </div>
+                <div id="inventory">
+                    <span>Inventory:</span>
+                    <ul id="inventory-list"></ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize game state
+        let gameState = {
+            playerName: "Adventurer",
+            playerClass: "Unknown",
+            health: 100,
+            inventory: [],
+            visitedLocations: []
+        };
+
+        // DOM Elements
+        const choiceButtons = document.querySelectorAll('.choice-btn');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const playerClassDisplay = document.getElementById('player-class-display');
+        const playerHealthDisplay = document.getElementById('player-health');
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('questGameState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                
+                // Update UI with saved state
+                playerNameDisplay.textContent = gameState.playerName;
+                playerClassDisplay.textContent = gameState.playerClass;
+                playerHealthDisplay.textContent = `Health: ${gameState.health}`;
+                
+                // Add this location to visited locations if not already there
+                if (!gameState.visitedLocations.includes('guardian-truth')) {
+                    gameState.visitedLocations.push('guardian-truth');
+                    saveGameState();
+                }
+                
+                // Populate inventory
+                updateInventoryDisplay();
+            } else {
+                // If no saved state, redirect to start page
+                window.location.href = "index.html";
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('questGameState', JSON.stringify(gameState));
+        }
+
+        // Update inventory display
+        function updateInventoryDisplay() {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            
+            if (gameState.inventory.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.textContent = 'Empty';
+                inventoryList.appendChild(emptyItem);
+            } else {
+                gameState.inventory.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = item;
+                    inventoryList.appendChild(listItem);
+                });
+            }
+        }
+
+        // Add event listeners to choice buttons
+        choiceButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const destination = this.getAttribute('data-destination');
+                const item = this.getAttribute('data-item');
+                
+                // Add item to inventory if specified
+                if (item && !gameState.inventory.includes(item)) {
+                    gameState.inventory.push(item);
+                    
+                    // Show item acquisition notification
+                    const notification = document.createElement('div');
+                    notification.className = 'item-notification';
+                    notification.innerHTML = `<span>Crystal Fragment Acquired!</span>`;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.classList.add('show');
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 500);
+                    }, 3000);
+                    
+                    saveGameState();
+                }
+                
+                // Navigate to destination
+                window.location.href = destination;
+            });
+        });
+
+        // Load game state when page loads
+        loadGameState();
+    </script>
+</body>
+</html>
