@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crystal of Destiny - Fantasy Quest</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container start-page">
+        <header>
+            <h1>The Crystal of Destiny</h1>
+            <div class="subtitle">A Fantasy Quest Adventure</div>
+        </header>
+        
+        <main>
+            <div class="story-container">
+                <div class="story-image start-image"></div>
+                <div class="story-text">
+                    <p>In the realm of Eldoria, a land once blessed by the harmony between light and darkness, chaos now reigns. The ancient Crystal of Destiny, which maintained the balance between these primal forces, has been shattered into three fragments.</p>
+                    <p>As darkness spreads across the land, you have been chosen by the Council of Mages to recover the crystal fragments and restore balance to the world.</p>
+                    <p>Your journey begins at the crossroads outside the village of Willowbrook. The path ahead is fraught with danger, and your choices will determine the fate of Eldoria.</p>
+                    <p class="quest-prompt">What is your name, brave adventurer?</p>
+                    
+                    <div class="character-creation">
+                        <div class="input-group">
+                            <label for="player-name">Your Name:</label>
+                            <input type="text" id="player-name" placeholder="Enter your name">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Choose your class:</label>
+                            <div class="class-selection">
+                                <div class="class-option" data-class="warrior">
+                                    <div class="class-icon warrior-icon"></div>
+                                    <span>Warrior</span>
+                                </div>
+                                <div class="class-option" data-class="mage">
+                                    <div class="class-icon mage-icon"></div>
+                                    <span>Mage</span>
+                                </div>
+                                <div class="class-option" data-class="ranger">
+                                    <div class="class-icon ranger-icon"></div>
+                                    <span>Ranger</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="choices-container">
+                <button id="start-quest" class="choice-btn primary-btn">Begin Your Quest</button>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="game-status">
+                <div id="player-stats" class="hidden">
+                    <span id="player-name-display">Adventurer</span> | 
+                    <span id="player-class-display">Unknown</span> | 
+                    <span id="player-health">Health: 100</span>
+                </div>
+                <div id="inventory" class="hidden">
+                    <span>Inventory:</span>
+                    <ul id="inventory-list"></ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize game state
+        let gameState = {
+            playerName: "",
+            playerClass: "",
+            health: 100,
+            inventory: [],
+            visitedLocations: []
+        };
+
+        // DOM Elements
+        const startQuestBtn = document.getElementById('start-quest');
+        const playerNameInput = document.getElementById('player-name');
+        const classOptions = document.querySelectorAll('.class-option');
+        const playerStats = document.getElementById('player-stats');
+        const inventory = document.getElementById('inventory');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const playerClassDisplay = document.getElementById('player-class-display');
+
+        // Select character class
+        classOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                classOptions.forEach(opt => opt.classList.remove('selected'));
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                // Store selected class
+                gameState.playerClass = this.getAttribute('data-class');
+            });
+        });
+
+        // Start quest button
+        startQuestBtn.addEventListener('click', function() {
+            // Get player name
+            const playerName = playerNameInput.value.trim();
+            if (playerName === "") {
+                alert("Please enter your name before starting the quest.");
+                return;
+            }
+            
+            // Check if class is selected
+            if (!gameState.playerClass) {
+                alert("Please select your class before starting the quest.");
+                return;
+            }
+            
+            // Save player info
+            gameState.playerName = playerName;
+            
+            // Save game state to localStorage
+            saveGameState();
+            
+            // Navigate to the first quest page
+            window.location.href = "crossroads.html";
+        });
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('questGameState', JSON.stringify(gameState));
+        }
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('questGameState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                
+                // Update UI with saved state
+                playerNameDisplay.textContent = gameState.playerName;
+                playerClassDisplay.textContent = gameState.playerClass;
+                
+                // Show player stats and inventory
+                playerStats.classList.remove('hidden');
+                inventory.classList.remove('hidden');
+                
+                // Populate inventory
+                updateInventoryDisplay();
+            }
+        }
+
+        // Update inventory display
+        function updateInventoryDisplay() {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            
+            if (gameState.inventory.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.textContent = 'Empty';
+                inventoryList.appendChild(emptyItem);
+            } else {
+                gameState.inventory.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = item;
+                    inventoryList.appendChild(listItem);
+                });
+            }
+        }
+
+        // Check if this is a return visit
+        loadGameState();
+    </script>
+</body>
+</html>
