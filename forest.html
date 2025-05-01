@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whispering Woods - The Crystal of Destiny</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container forest-page">
+        <header>
+            <h1>The Whispering Woods</h1>
+        </header>
+        
+        <main>
+            <div class="story-container">
+                <div class="story-image forest-image"></div>
+                <div class="story-text">
+                    <p>The forest envelops you in its ancient embrace. Massive trees tower overhead, their canopies filtering the sunlight into dappled patterns on the moss-covered ground. The air is thick with the scent of earth and growing things.</p>
+                    
+                    <p>As you venture deeper, you begin to hear whispers—not from any visible source, but from the forest itself. The trees seem to be communicating, their leaves rustling with secrets.</p>
+                    
+                    <p>Suddenly, you come upon a fork in the path:</p>
+                    
+                    <p>To the <strong>left</strong>, a narrow trail winds between ancient oaks. Glowing mushrooms line the path, pulsing with an ethereal blue light.</p>
+                    
+                    <p>To the <strong>right</strong>, a wider path leads to what appears to be a clearing. You can see sunlight streaming down, illuminating a circle of standing stones.</p>
+                    
+                    <p class="quest-prompt">Which path will you follow?</p>
+                </div>
+            </div>
+            
+            <div class="choices-container">
+                <button class="choice-btn" data-destination="mushroom-path.html" data-item="Glowing Mushroom">
+                    <span class="choice-icon mushroom-icon"></span>
+                    <div class="choice-text">
+                        <h3>Follow the Mushroom Path</h3>
+                        <p>The glowing mushrooms might lead to something magical.</p>
+                    </div>
+                </button>
+                
+                <button class="choice-btn" data-destination="stone-circle.html">
+                    <span class="choice-icon stones-icon"></span>
+                    <div class="choice-text">
+                        <h3>Head to the Stone Circle</h3>
+                        <p>The ancient stones might hold the key to finding the crystal fragment.</p>
+                    </div>
+                </button>
+                
+                <button class="choice-btn secondary-btn" data-destination="crossroads.html">
+                    <span class="choice-icon return-icon"></span>
+                    <div class="choice-text">
+                        <h3>Return to the Crossroads</h3>
+                        <p>This forest feels too dangerous. Better try another path.</p>
+                    </div>
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="game-status">
+                <div id="player-stats">
+                    <span id="player-name-display">Adventurer</span> | 
+                    <span id="player-class-display">Unknown</span> | 
+                    <span id="player-health">Health: 100</span>
+                </div>
+                <div id="inventory">
+                    <span>Inventory:</span>
+                    <ul id="inventory-list"></ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize game state
+        let gameState = {
+            playerName: "Adventurer",
+            playerClass: "Unknown",
+            health: 100,
+            inventory: [],
+            visitedLocations: []
+        };
+
+        // DOM Elements
+        const choiceButtons = document.querySelectorAll('.choice-btn');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const playerClassDisplay = document.getElementById('player-class-display');
+        const playerHealthDisplay = document.getElementById('player-health');
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('questGameState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                
+                // Update UI with saved state
+                playerNameDisplay.textContent = gameState.playerName;
+                playerClassDisplay.textContent = gameState.playerClass;
+                playerHealthDisplay.textContent = `Health: ${gameState.health}`;
+                
+                // Add this location to visited locations if not already there
+                if (!gameState.visitedLocations.includes('forest')) {
+                    gameState.visitedLocations.push('forest');
+                    saveGameState();
+                }
+                
+                // Populate inventory
+                updateInventoryDisplay();
+            } else {
+                // If no saved state, redirect to start page
+                window.location.href = "index.html";
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('questGameState', JSON.stringify(gameState));
+        }
+
+        // Update inventory display
+        function updateInventoryDisplay() {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            
+            if (gameState.inventory.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.textContent = 'Empty';
+                inventoryList.appendChild(emptyItem);
+            } else {
+                gameState.inventory.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = item;
+                    inventoryList.appendChild(listItem);
+                });
+            }
+        }
+
+        // Add event listeners to choice buttons
+        choiceButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const destination = this.getAttribute('data-destination');
+                const item = this.getAttribute('data-item');
+                
+                // Add item to inventory if specified
+                if (item && !gameState.inventory.includes(item)) {
+                    gameState.inventory.push(item);
+                    
+                    // Show item acquisition notification
+                    const notification = document.createElement('div');
+                    notification.className = 'item-notification';
+                    notification.innerHTML = `<span>Item Acquired: ${item}</span>`;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.classList.add('show');
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 500);
+                    }, 3000);
+                    
+                    saveGameState();
+                }
+                
+                // Navigate to destination
+                window.location.href = destination;
+            });
+        });
+
+        // Load game state when page loads
+        loadGameState();
+    </script>
+</body>
+</html>
