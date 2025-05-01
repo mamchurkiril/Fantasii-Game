@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crossroads - The Crystal of Destiny</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="page-container crossroads-page">
+        <header>
+            <h1>The Crossroads</h1>
+        </header>
+        
+        <main>
+            <div class="story-container">
+                <div class="story-image crossroads-image"></div>
+                <div class="story-text">
+                    <p>You stand at a weathered crossroads, ancient stone markers pointing in three directions. The morning mist swirls around your feet as you consider your options.</p>
+                    
+                    <p>To the <strong>north</strong> lies the Whispering Woods, a dense forest shrouded in mystery. Local legends speak of an ancient druid who guards one of the crystal fragments.</p>
+                    
+                    <p>To the <strong>east</strong> stands the imposing silhouette of Dragonspine Mountain. Rumors suggest that a fragment is hidden in the abandoned dwarven mines beneath the mountain.</p>
+                    
+                    <p>To the <strong>west</strong>, the path leads to the coastal town of Saltmarsh, where fishermen have reported strange lights beneath the waves. Could the final fragment be hidden in the depths of the sea?</p>
+                    
+                    <p class="quest-prompt">Which path will you choose?</p>
+                </div>
+            </div>
+            
+            <div class="choices-container">
+                <button class="choice-btn" data-destination="forest.html">
+                    <span class="choice-icon forest-icon"></span>
+                    <div class="choice-text">
+                        <h3>Journey to the Whispering Woods</h3>
+                        <p>Seek the ancient druid and the wisdom of the forest.</p>
+                    </div>
+                </button>
+                
+                <button class="choice-btn" data-destination="mountain.html">
+                    <span class="choice-icon mountain-icon"></span>
+                    <div class="choice-text">
+                        <h3>Climb to Dragonspine Mountain</h3>
+                        <p>Brave the treacherous peaks and explore the dwarven mines.</p>
+                    </div>
+                </button>
+                
+                <button class="choice-btn" data-destination="coast.html">
+                    <span class="choice-icon coast-icon"></span>
+                    <div class="choice-text">
+                        <h3>Travel to Saltmarsh</h3>
+                        <p>Investigate the mysterious lights beneath the waves.</p>
+                    </div>
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="game-status">
+                <div id="player-stats">
+                    <span id="player-name-display">Adventurer</span> | 
+                    <span id="player-class-display">Unknown</span> | 
+                    <span id="player-health">Health: 100</span>
+                </div>
+                <div id="inventory">
+                    <span>Inventory:</span>
+                    <ul id="inventory-list"></ul>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize game state
+        let gameState = {
+            playerName: "Adventurer",
+            playerClass: "Unknown",
+            health: 100,
+            inventory: [],
+            visitedLocations: []
+        };
+
+        // DOM Elements
+        const choiceButtons = document.querySelectorAll('.choice-btn');
+        const playerNameDisplay = document.getElementById('player-name-display');
+        const playerClassDisplay = document.getElementById('player-class-display');
+        const playerHealthDisplay = document.getElementById('player-health');
+
+        // Load game state from localStorage
+        function loadGameState() {
+            const savedState = localStorage.getItem('questGameState');
+            if (savedState) {
+                gameState = JSON.parse(savedState);
+                
+                // Update UI with saved state
+                playerNameDisplay.textContent = gameState.playerName;
+                playerClassDisplay.textContent = gameState.playerClass;
+                playerHealthDisplay.textContent = `Health: ${gameState.health}`;
+                
+                // Add this location to visited locations if not already there
+                if (!gameState.visitedLocations.includes('crossroads')) {
+                    gameState.visitedLocations.push('crossroads');
+                    saveGameState();
+                }
+                
+                // Populate inventory
+                updateInventoryDisplay();
+            } else {
+                // If no saved state, redirect to start page
+                window.location.href = "index.html";
+            }
+        }
+
+        // Save game state to localStorage
+        function saveGameState() {
+            localStorage.setItem('questGameState', JSON.stringify(gameState));
+        }
+
+        // Update inventory display
+        function updateInventoryDisplay() {
+            const inventoryList = document.getElementById('inventory-list');
+            inventoryList.innerHTML = '';
+            
+            if (gameState.inventory.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.textContent = 'Empty';
+                inventoryList.appendChild(emptyItem);
+            } else {
+                gameState.inventory.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = item;
+                    inventoryList.appendChild(listItem);
+                });
+            }
+        }
+
+        // Add event listeners to choice buttons
+        choiceButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const destination = this.getAttribute('data-destination');
+                window.location.href = destination;
+            });
+        });
+
+        // Load game state when page loads
+        loadGameState();
+    </script>
+</body>
+</html>
