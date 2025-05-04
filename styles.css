@@ -15,6 +15,7 @@
     --red: #a83232;
     --blue: #3a7ca5;
     --green: #3c8c5e;
+    color: white;
 }
 
 * {
@@ -33,6 +34,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 1rem;
+     
 }
 
 h1, h2, h3, h4 {
@@ -64,7 +66,9 @@ header {
     position: relative;
     z-index: 2;
 }
-
+.choice-btn{
+color: white;
+}
 header h1 {
     font-size: 2.5rem;
     color: var(--ink);
@@ -174,8 +178,8 @@ main {
 }
 
 .class-option.selected {
-    background-color: rgba(212, 175, 55, 0.2);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    background-color: rgba(253, 46, 46, 0.5);
+    box-shadow: 0 0 10px rgba(253, 46, 46, 0.5);
 }
 
 .class-icon {
@@ -475,11 +479,11 @@ footer {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: rgba(212, 175, 55, 0.9);
+    background-color: rgba(255, 251, 0, 0.9);
     color: var(--ink);
     padding: 1rem;
     border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
     z-index: 1000;
     transform: translateX(150%);
     transition: transform 0.5s ease;
@@ -509,4 +513,14 @@ footer {
         height: 150px;
     }
 }
-
+main{
+    background-image: url("https://learn.logikaschool.com/uploads/student/3145383/6814f15dad8ab.jpg");
+color: rgb(251, 255, 0);
+}
+.class-option:active{
+background-color: #ff0000;
+}
+.quest-prompt{
+    color: rgb(0, 242, 255);
+    
+}
